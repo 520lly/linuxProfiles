@@ -1,0 +1,82 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : scpUpload.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 31/10/17 19:06:09 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+SERVER=0
+TARGET_NAME="root"
+TARGET_IP=`cat ~/bin/ifc | tr -d ['\r\n']`
+PASSWD="root"
+CMD_PROMPT="\](\$|#)" 
+SERVER=0
+#echo "TARGET_IP is [$TARGET_IP]"
+
+function usage()
+{
+cat << EOF
+usage:scpPull  [-h?s] <source_file(remote:$TARGET_NAME@$TARGET_IP:${1:-"/root"})> ${2:-"<dest_file>"}
+-------- server 0 : $TARGET_NAME@$TARGET_IP 
+-------- server 1 : cnninvmwkst01 
+-------- server 2 : target 
+EOF
+}
+
+while getopts "h?s:" opt; do
+    case "$opt" in
+        h|\?)
+            usage
+            exit 0
+            ;;
+        s)  
+            SERVER=$OPTARG
+            #drop the first two parameters
+            shift 2
+            ;;
+    esac
+done
+
+#echo "$@"
+
+if [ $SERVER -eq 1 ]
+then
+    TARGET_NAME="wang_j11"
+    #TARGET_IP=cnninvmwkst01
+    TARGET_IP=10.57.9.145
+    PASSWD=`cat ~/bin/pw4wang_j11 | tr -d ['\r\n']`
+elif [ $SERVER -eq 2 ]
+then 
+    TARGET_IP=`cat ~/bin/ifc2 | tr -d ['\r\n']`
+fi 
+
+
+if [ $# -eq 0 ]
+then
+    usage
+else
+    RET=`which scp`
+    if [ $? -eq 0 ]
+    then
+        expect -c "
+        spawn scp $TARGET_NAME@$TARGET_IP:${1:-"the file path and name you want to copy to target"} ${2:-"./"}
+        expect {
+           *yes/no* { send -- yes\r;exp_continue;}  
+           *password* { send -- $PASSWD\r;
+           set timeout 0
+           expect -re $CMD_PROMPT
+           }  
+        }
+        interact
+        "
+    else
+        echo "Please install ssh(scp)"
+    fi
+fi
+
+
+

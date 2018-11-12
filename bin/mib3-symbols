@@ -1,0 +1,14 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : mib2-symbols.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 14/11/17 11:13:47 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+SYMBOLS_PAYH="/home/user/jpcc/debug/symbols/images_rootfs/lib-with-symbols"
+echo $SYMBOLS_PAYH
+

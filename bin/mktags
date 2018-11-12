@@ -1,0 +1,18 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : mktags.sh
+# Descp : used for make cscope.* files and tags 
+# Author: jaycee
+# Date  : 06/02/17 16:37:23 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+PWD=`pwd`
+find $PWD -name "*.[hc]" -o -name "*.[hc]pp" > $PWD/cscope.files 
+cscope -qRb -i $PWD/cscope.files 
+ctags -R --c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v --fields=+liaS --extra=+q --language-force=c++
+#cscope -qRb 
+#ctags -R 
+

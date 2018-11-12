@@ -1,0 +1,31 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : GenerateStm.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 26/04/18 21:25:42 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+function usage()
+{
+	echo "$(basename "$0") input.xmi namespace outputFolder"
+	echo "   namespace: e.g. tsd/bt/handsfree/status/call/stm"
+	exit 1
+}
+
+if [ ! $# -eq 3 ]; then
+	usage
+fi
+
+java -jar /home/user/jpcc/tools/stmgen/tsd.common.tools.stmgen/lib/tsd.common.tools.stmgen.jar \
+    -overview \
+    -overview_lmt \
+    -show-error-location \
+    -name="${2}" \
+    -import-format=sparxea \
+    -i="${1}" \
+    -o="${3}" \
+

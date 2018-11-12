@@ -1,0 +1,19 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : mib3-ip.sh
+# Descp : used for retrieving IP address of MIB3 target
+# Author: jaycee
+# Date  : 07/11/17 16:29:26 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+TARGET_NAME="root"
+PASSWD="root"
+
+targetIP.exp $TARGET_NAME $PASSWD
+TARGET_IP=`cat ~/bin/ifc | grep -E ".*\..*\..*\..*"`
+echo $TARGET_IP > ~/bin/ifc
+echo $TARGET_IP:12345 > ~/bin/targetIpPort
+sed -e 's/[ ]*$//g' ./ifc 

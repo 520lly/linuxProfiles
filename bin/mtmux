@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+SESSIONNAME="build-server"
+tmux has-session -t $SESSIONNAME &> /dev/null
+
+if [ $? != 0 ]
+ then
+    tmux new-session -s $SESSIONNAME -n $SESSIONNAM -d
+    tmux send-keys -t $SESSIONNAME "~/bin/$SESSIONNAME" C-m
+fi
+
+tmux attach -t $SESSIONNAME
+

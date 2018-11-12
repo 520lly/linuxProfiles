@@ -1,0 +1,68 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : /home/user/bin/mib3CmdBox.sh
+# Descp : used for executing some special command in ZR3 target
+# Author: jaycee
+# Date  : 26/12/17 18:45:06 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+CMD_TYPE=""
+CMD_SUB_TYPE=""
+CMD=""
+CMD_PARA=""
+CMD_TYPE_ARRAY=(sys zr3Cmd)
+CMD_SYS_ARRAY=(start restart stop)
+
+function usage()
+{
+cat << EOF
+usage:$0 [s <r|s|p>] [p <string>] [-h?]
+    [s] [rsp] [p] service name ---- systemctl command
+        [rsp]:r--restart   s--start  p--stop
+        like: $0 -s s -p phone
+EOF
+}
+
+
+while getopts ":h?s:p:" opt; do
+    case "$opt" in
+        h|\?)
+            usage
+            exit 0
+            ;;
+        s)  
+            CMD_TYPE=${CMD_TYPE_ARRAY[0]}
+            CMD_SUB_TYPE=$OPTARG
+            ;;
+        p)
+            CMD_PARA=$OPTARG
+            ;;
+    esac
+done
+
+case $CMD_TYPE in
+    sys)
+        CMD="systemctl";;
+esac
+
+#echo "cmd is $CMD"
+#echo "CMD_SUB_TYPE is $CMD_SBU_TYPE"
+case $CMD_SUB_TYPE in
+    r)
+        CMD=${CMD}" restart "${CMD_PARA};;
+    s)
+        CMD=${CMD}" start "$CMD_PARA;;
+    p)
+        CMD=${CMD}" stop "$CMD_PARA;;
+esac
+
+#echo "CMD is $CMD finally"
+if [ "$CMD" != "" ]
+then 
+    zr3Cmd "${CMD}"
+fi
+
+

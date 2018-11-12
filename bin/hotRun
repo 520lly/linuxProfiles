@@ -1,0 +1,17 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : hotRun.sh
+# Descp : used for quick compiling phone module and synchronizing newly compiled binary file to ZR3 target and then start running it
+# Author: jaycee
+# Date  : 27/12/17 08:52:13 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+#Note:this command shall be run in directory that bob can build images
+
+bob dev -b zr3/zr3-variant-VW_EU/images::rootfs/phone::bt-phone::tsd-bt-phone-mib3-target/ 
+zr3Cmd "systemctl stop phone" 
+scpPush -s 0 ./dev/dist/phone/bt-phone/tsd-bt-phone-mib3-target/1/workspace/usr/bin/tsd.bt.phone.mib3 /usr/bin 
+zr3Cmd "systemctl start phone"

@@ -1,0 +1,107 @@
+#!/usr/bin/expect -f
+#
+# Script to start or stop the testapp on target
+#
+# @author jianqing.wang@@preh.cn
+#
+
+#read the input parameters
+set target        [lindex $argv 0]
+set user          [lindex $argv 1]
+set passw         [lindex $argv 2]
+set action        [lindex $argv 3]
+set no_clean_up   [lindex $argv 4]
+set no_reboot     [lindex $argv 5]
+
+# set script parameters
+set homedir $run_dir
+set extractdir $homedir/swi_btf_files
+#set preparescript $homedir/testapp.run
+#set startscript $extractdir/usr/bin/testapp.run
+#set stopscript  $extractdir/usr/bin/stop_proc.sh
+
+# set timeout
+set timeout 30
+
+# set result
+set result "error"
+
+# start ssh connection
+if [ catch { spawn ssh $target } reason ] {
+   send_user "failed to spawn program: $reason\n"
+   exit 1
+}
+
+# handle login
+expect {
+   "(yes/no)?" { send "yes\r" ; exp_continue }
+   password: {send  "$passw\n"}
+   default   { puts stdout "\nUnkown error\n" ; exit 2}
+}
+
+# after login start
+expect "# "
+switch $action {
+    get_ip {
+      send "ifconfig | grep -E \"^eth1\" -A 1 | grep -E \"inet\" | awk \'{print \$2}\' | awk -F \':\' \'{print \$2}\' \r"
+      expect {
+         "ok" { set result "ok"}
+      }
+   }
+   create_dir {
+      send "mkdir -p $run_dir && echo ok \n"
+      expect {
+         "ok" { set result "ok"}
+      }
+   }
+   prepare {
+      #send "$preparescript $run_dir $app_path prepare_only \n"
+      #expect {
+         #"Stop after preparing!" { set result "ok"}
+         #"Exit with error" { set result "error" }
+      #}
+   }
+   stop_services {
+      #send "$startscript $run_dir $app_path stop_services \n"
+      # set timeout to 120 seconds because some services needed more time to stop
+      #set timeout 120
+      #expect {
+         #"> " { exp_continue }
+         #"List of running units:" { set result "ok"; exp_continue }
+         #"Stop after stopping services!" { set result "ok" }
+         #"Exit with error" { set result "error" }
+      #}
+   }
+   patch_test_device {
+      #send "$extractdir/$app_path \n"
+      #expect {
+         #"Patching target done" {
+            #send "reboot\n"
+            #expect "# " { set result "ok" }
+         #}
+         #"Target is already patched" { set result "ok" }
+         #"Exit with error" { set result "error" }
+      #}
+   }
+   start {
+      #send "$startscript $run_dir $app_path no_prepare $no_clean_up $no_reboot & \n"
+      #expect {
+         #": not found" { send "exit\n"; exit 4 }
+         #"# " { set result "ok" }
+         #"Exit with error" { set result "error" }
+      #}
+   }
+   stop  {
+      #send "$stopscript $run_dir/swi_btf_files/$app_path \n"
+      #expect {
+         #"stop_proc.sh end." { set result "ok" }         
+         #"Exit with error" { set result "error" }
+      #}
+   }
+}
+
+switch $result {
+    ok { send "exit\n"; exit 0 }
+    error { send "exit\n"; exit 5 }
+}
+exit 6

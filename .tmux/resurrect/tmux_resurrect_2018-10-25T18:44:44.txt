@@ -1,0 +1,10 @@
+pane	build-server	1	:..es-svw-cns3.0	0	:	1	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0	1	zsh	:
+pane	build-server	2	:...phonemanager	1	:*Z	1	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0/dev/src/phone/phonemanager/tsd-phonemanager/1/workspace/tsd.phonemanager	0	zsh	:vim
+pane	build-server	2	:...phonemanager	1	:*Z	2	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0/dev/src/sal	1	vim	:vim
+pane	build-server	3	:..d.sal.carlife	0	:-	1	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0/dev/src/sal/tsd-sal-carlife/1/workspace/tsd.sal.carlife	1	zsh	:
+pane	build-server	4	:..e/tsd.sal.api	0	:	1	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0/dev/src/sal/tsd-sal-api/5/workspace/tsd.sal.api	1	zsh	:
+window	build-server	1	0	:	b761,211x43,0,0,4
+window	build-server	2	1	:*Z	740a,211x43,0,0[211x21,0,0,1,211x21,0,22,6]
+window	build-server	3	0	:-	b75f,211x43,0,0,2
+window	build-server	4	0	:	5bdf,211x43,0,0,10
+state	build-server	

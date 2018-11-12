@@ -1,0 +1,48 @@
+#!/usr/bin/expect -f 
+
+if { $argc != 2 } {  
+    send_user "usage: $argv0 <server> <password>
+    "  
+    exit  
+}  
+
+set timeout 1 
+set TERM ANSI  
+
+set SERVER [lindex $argv 0]  
+set PASSWD [lindex $argv 1]
+set accum {}
+set full [open ifc w]
+
+spawn minicom
+sleep 2
+send "\r"
+expect {                                           
+    "login:"
+    {
+        send "root\r"
+        expect "Password:"
+        {
+            send "$PASSWD\r"
+        }
+    }
+    "#"
+    {
+        send "ifconfig | grep -E \"^eth1\" -A 1 | grep -E \"inet\" | awk \'{print \$2}\' | awk -F \':\' \'{print \$2}\' \r"
+        set timeout 2
+        expect {
+            -regexp {..*} {
+                set accum "${accum}$expect_out(0,string)"
+                #set timeout 1
+                exp_continue
+            }
+        }
+    }
+}
+puts $full $accum
+send "\01"
+send "z"
+send "x"
+send "\r\n"
+expect eof
+

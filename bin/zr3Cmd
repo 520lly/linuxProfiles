@@ -1,0 +1,35 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : /home/user/bin/zr3Cmd.sh
+# Descp : used for executing remote command via ssh
+# Author: jaycee
+# Date  : 26/12/17 15:50:22 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+
+TARGET_NAME="root"
+TARGET_IP=`cat ~/bin/ifc | tr -d ['\r\n']`
+PASSWD="root"
+CMD_PROMPT="\](\$|#) " 
+
+function usage()
+{
+cat << EOF
+    usage:zr3Cmd "cmd"
+EOF
+}
+
+if [ $# -eq 0 ]
+then 
+    usage
+else
+    echo $@
+    remoteCmdViaSSH -s 0 "$@"
+    #eval zr3Cmd1.xpct $TARGET_IP $TARGET_NAME $PASSWD "self_command" "$@"
+fi
+
+
+

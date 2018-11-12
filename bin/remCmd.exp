@@ -1,0 +1,29 @@
+#!/usr/bin/expect -f
+
+set prompt "# "
+spawn ssh [lindex $argv 1]@[lindex $argv 0]                                                         
+
+set timeout 5
+expect {
+    timeout {
+        puts "Connection timed out"
+        exit 1
+    }
+
+    "yes/no" {
+        send "yes\r"
+        exp_continue
+    }
+
+    "assword:" {
+        send -- "[lindex $argv 2]\r"
+        exp_continue
+    }
+
+    "$prompt" {
+        send -- "[lindex $argv 3]\r"
+        #send "ls -la\r"
+    }
+}
+
+expect "$prompt" {send -- "exit\r"}

@@ -1,0 +1,8 @@
+pane	build-server	1	:bob	0	:#-	1	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0	1	python3	:python3 -c import sys from bob.scripts import bob sys.exit(bob("/home/PREHCN/wang_j11/swi-btf-bin/bob")) dev -DCONFIG_ANDROID=0 -DCONFIG_HYPERVISOR=0 -DCONFIG_XTENSA=1 -DXTENSAD_LICENSE_FILE=27000@10.57.9.154 -DXTENSA_LICENSE_RETRIES=10:60 sal --resume
+pane	build-server	2	:bob	0	:	1	:/home/PREHCN/wang_j11/mib3Update/mib3	1	python3	:python3 -c import sys from bob.scripts import bob sys.exit(bob("/home/PREHCN/wang_j11/swi-btf-bin/bob")) dev sal
+pane	build-server	3	:fg	1	:*Z	1	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0/dev/src/sal	1	vim	:vim
+pane	build-server	3	:fg	1	:*Z	2	:/home/PREHCN/wang_j11/jpcc/work/recipes-svw-cns3.0/dev/src/phone/phonemanager/tsd-phonemanager/1/workspace/tsd.phonemanager	0	vim	:vim
+window	build-server	1	0	:#-	b75d,211x43,0,0,0
+window	build-server	2	0	:	b75e,211x43,0,0,1
+window	build-server	3	1	:*Z	f40a,211x43,0,0[211x21,0,0,2,211x21,0,22,3]
+state	build-server	

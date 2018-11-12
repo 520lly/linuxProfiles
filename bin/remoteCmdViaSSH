@@ -1,0 +1,78 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : enableTatgetNetwork.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 26/12/17 10:17:22 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+SERVER=0
+TARGET_NAME="root"
+TARGET_IP=`cat ~/bin/ifc | tr -d ['\r\n']`
+PASSWD="root"
+CMD_PROMPT="\](\$|#) " 
+#echo "TARGET_IP is [$TARGET_IP]"
+
+function usage()
+{
+cat << EOF
+usage:scp [-h?s] <source_file(remote:$TARGET_NAME@$TARGET_IP> ${1:-"<command lines>"}
+-------- server 0 : $TARGET_NAME@$TARGET_IP 
+-------- server 1 : cnninvmwkst01 
+EOF
+}
+
+while getopts "h?s:" opt; do
+    case "$opt" in
+        h|\?)
+            usage
+            exit 0
+            ;;
+        s)  
+            SERVER=$OPTARG
+            #drop the first two parameters
+            shift 2
+            ;;
+    esac
+done
+
+#echo "$@"
+
+CMDLINE="$@"
+
+if [ $SERVER -eq 1 ]
+then
+    TARGET_NAME="wang_j11"
+    TARGET_IP=cnninvmwkst01
+    PASSWD=`cat ~/bin/pw4wang_j11 | tr -d ['\r\n']`
+fi 
+
+if [ $# -eq 0 ]
+then
+    usage
+else
+    RET=`which ssh`
+    if [ $? -eq 0 ]
+    then
+        #sshpass -p $PASSWD ssh $TARGET_NAME@$TARGET_IP ${1}
+        #remoteCmd.exp $TARGET_NAME $PASSWD $TARGET_IP ${1}
+        remCmd.exp $TARGET_IP $TARGET_NAME $PASSWD "$CMDLINE"
+        #expect -c "
+        #spawn ssh -t $TARGET_NAME@$TARGET_IP ${1}
+        #expect {
+           #*yes/no* { send -- yes\r;exp_continue;}  
+           #*password* { send -- $PASSWD\r;
+           #set timeout 0
+           #expect -re $CMD_PROMPT
+           #}  
+        #}
+        #interact
+        #"
+    else
+        echo "Please install ssh(scp)"
+    fi
+fi
+

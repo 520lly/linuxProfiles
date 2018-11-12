@@ -1,0 +1,33 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : mib3-log.sh
+# Descp : used for catch log from MIB3 target via LAN
+# Author: jaycee
+# Date  : 07/11/17 17:56:15 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+TARGET_IP=`cat ~/bin/ifc | tr -d ['\r\n']`
+TARGET_PORT=15361
+
+function usage()
+{
+cat << EOF
+usage:$0 <IP address of target eth1> <port(default:15361)> <regex>
+EOF
+}
+
+ret=`which nc`
+if [ $ret == "" ]
+then
+    usage
+else
+    nc $TARGET_IP $TARGET_PORT | grep -E ${1:-"tsd.bt"} --color=auto
+fi
+
+
+
+
+

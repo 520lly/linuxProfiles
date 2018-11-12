@@ -1,0 +1,207 @@
+#!/bin/bash -eu
+SCRIPT_DIR="$(readlink -m $(dirname $0) )"
+
+# default recipies branch
+GIT_RECIPIES_BRANCH="swi/binarytests/develop"
+
+PROJECTS=""
+
+# helper function to ptint error and exit
+function error() {
+  echo -e "\e[31m!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\e[0m"
+  echo "..."
+  echo "$(tail ${tmp_output})"
+  echo "(for full output see ${tmp_output})"
+  echo -e "\e[31m!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\e[0m"
+  echo -e "\e[31mERROR: $*\e[0m"
+  echo -e "\e[31m!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\e[0m"
+  exit 1
+}
+
+# helper function to print usage
+function print_usage() {
+  echo
+  echo "usage: $0 PROJECT_TYPE"
+  echo
+  echo "PROJECT_TYPE is one project:"
+  echo "   media ... Creates projects for binarytests for media group"
+  echo "   radio ... Creates projects for binarytests for radio group"
+  echo "   nav ..... Creates projects for binarytests for navigation group"
+  echo
+  echo "   no ...... Only checkout recipies, no project creation"
+  echo "   swi [target|dev]"
+  echo "             Creates projects for binarytests for swi group."
+  echo "             (optional create only for target or only for host)"
+  echo
+  echo "   custom PATH [PATH..]"
+  echo "             Creates one or more custom projects. PATH is a bob build path."
+  echo
+  exit 1
+}
+
+# helper function to print cmd and call it
+function cmd_and_print() {
+  echo "+ $*"
+  $* || error "cmd failed!"
+}
+
+# only one argument is accepted except by custom option
+if [ "${1:-}" != "custom" ] && [ "${1:-}" != "swi" ] && [ $# -ne 1 ]; then
+  print_usage
+fi
+
+# swi only one additional argument ok
+if [ "${1:-}" == "swi" ] && [ $# -gt 2 ]; then
+  print_usage
+fi
+
+# handle arguments
+while [ "" != "${1:-}" ]; do
+  case "${1:-}" in
+    media|radio|nav|no)
+      # only save project
+      PROJECT="$1"
+      shift
+      ;;
+    swi)
+      # save project
+      PROJECT="$1"
+      shift
+      # maybe we want only target or host to build
+      if [ "${1:-}" == "target" ] || [ "${1:-}" == "dev" ]; then
+        PROJECT_SWI_ONLY="$1"
+        shift
+      fi
+      ;;
+    custom)
+      # save project
+      PROJECT="$1"
+      shift
+      # save the following args in PROJECTS and shift them away
+      PROJECTS="$*"
+      while [ "" != "${1:-}" ]; do shift; done
+      ;;
+    *)
+      print_usage
+      ;;
+  esac
+done
+
+echo -e "\e[32mMake project for Binarytests\e[0m"
+
+tmp_output="$(mktemp)"
+
+# do configure for PROJECT
+case "$PROJECT" in
+  radio)
+    PROJECTS+=" binarytests/swi::binarytests-radio__tsd-radio-target"
+    PROJECTS+=" binarytests/swi::binarytests-radio__tsd-radio-target/radio::tsd-radio-binarytests"
+    GIT_RECIPIES_BRANCH="swi/binarytests/amb"
+    ;;
+  media)
+    PROJECTS+=" binarytests/swi::binarytests-media__mediaapplication__tsd-media-mib3-target"
+    PROJECTS+=" binarytests/swi::binarytests-media__mediaapplication__tsd-media-mib3-target/media::mediaapplication::tsd-media-mib3-binarytests"
+    GIT_RECIPIES_BRANCH="swi/binarytests/amb"
+    ;;
+  nav)
+    PROJECTS+=" binarytests/swi::binarytests-navigation__tsd-nav-rsi-viwi-host"
+    PROJECTS+=" binarytests/swi::binarytests-navigation__tsd-nav-rsi-viwi-host/navigation::tsd-nav-rsi-viwi-binarytests"
+    GIT_RECIPIES_BRANCH="swi/binarytests/master"
+    ;;
+  swi)
+    if [ "${PROJECT_SWI_ONLY:-}" == "dev" ] || [ "${PROJECT_SWI_ONLY:-}" == "" ]; then
+      PROJECTS+=" binarytests/swi::binarytests-swi__pcc-swi-testapp-dev"
+      PROJECTS+=" binarytests/swi::binarytests-swi__pcc-swi-testapp-dev/swi::pcc-swi-testapp-binarytests"
+      PROJECTS+=" binarytests/swi::binarytests-swi__pcc-swi-testapp-dev/swi::pcc-swi-testapp-dev"
+    fi
+    if [ "${PROJECT_SWI_ONLY:-}" == "target" ] || [ "${PROJECT_SWI_ONLY:-}" == "" ]; then
+      PROJECTS+=" binarytests/swi::binarytests-swi__pcc-swi-testapp-target"
+      PROJECTS+=" binarytests/swi::binarytests-swi__pcc-swi-testapp-target/swi::pcc-swi-testapp-binarytests"
+      PROJECTS+=" binarytests/swi::binarytests-swi__pcc-swi-testapp-target/swi::pcc-swi-testapp-target"
+    fi
+    GIT_RECIPIES_BRANCH="swi/binarytests/develop"
+    ;;
+  custom)
+    # PROJECTS is already set
+    [ "" == "$PROJECTS" ] && error "No build paths set!"
+    ;;
+  no)
+    #nothing to do
+    ;;
+  *)
+    error "$PROJECT is a not known project!"
+    ;;
+esac
+
+# clone repository in current directory if it is empty
+if [ $( ls | grep -ce ^) -eq 0 ]; then
+  cmd_and_print git clone --branch $GIT_RECIPIES_BRANCH git@git.mib3.technisat-digital:mib3-integration/tsd-recipes-mib3.git .
+else
+  echo -e "\e[33mINFO: Skip checkout because directory is not empty!\e[0m"
+fi
+
+# do nothing more if PROJECT is no
+if [ "no" == "$PROJECT" ]; then
+  echo "Only checkout recipies because project is 'no'!"
+  exit 0
+fi
+
+# create project for every given build path
+created_projects=""
+IFS=" "
+for BTF_BUILD_PATH in $PROJECTS; do
+  cmd_and_print bob project -n --download deps qt-creator $BTF_BUILD_PATH ${ADDITIONAL_QT_PROJECT_ARGS:-}
+
+  sub_path="$( echo ${BTF_BUILD_PATH} | sed 's|.*/||' )"
+  name="$( echo ${BTF_BUILD_PATH} | sed 's|::|__|g;s|/|_|g' )"
+  buildme="$( find $PWD/projects -type f -name buildme | grep "$name/buildme" )"
+  project_file_path="${buildme%/*}/${sub_path}"
+
+  # save created project
+  created_projects+=" ${project_file_path}.creator"
+
+  [ ! -f "$buildme" ] && error "Buildme not existing here '$buildme'!"
+  [ ! -f "${project_file_path}.creator" ] && error "Project file not existing here '$created_projects'!"
+  [ ! -f "${project_file_path}.includes" ] && error "Projects include file not existing here '$created_projects'!"
+
+  echo
+  echo "Add additional include search to $buildme"
+  {
+    echo "# add some includes needed for binarytests developing"
+    echo "find \$PWD/dev/dist/ -type d -name include >> \"${project_file_path}.includes\""
+  } >> "$buildme"
+
+  if [ "swi" == "$PROJECT" ]; then
+    echo "add generated files from build dir to project in $buildme"
+    {
+      echo "# add generated files from build dir"
+      echo "find \$PWD/dev/build/swi/pcc-swi-btf-common-*si* -name '*[ch]pp' -type f >> \"${project_file_path}.files\""
+    } >> "$buildme"
+    # only add some more for swi projects
+    if [ -f "${project_file_path}.creator.user" ]; then
+      # we want to modify only this file ...
+      if [ $(grep -ce '<valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>' "${project_file_path}.creator.user") -eq 1 ]; then
+        # and only if one line is in it
+        lib_path=""
+
+        #search for the correct lib path
+        type="dev"
+        [ $(echo $BTF_BUILD_PATH | grep -cP "^binarytests/[^/]*-target(/|$)") -eq 1 ] && type="target"
+        lib_path="$( for p in $(find $PWD/dev/dist/ -type d -name files_host -printf "%T+ " -print | sort -r | cut -d " " -f 2 | grep -Pe "-$type/[0-9]*/workspace/" ); do printf "$p/usr/lib64:"; done )"
+
+        if [ -d "$lib_path" ]; then
+          echo "Add LD_LIBRARY_PATH to creator.user"
+          # only set if lib_path exists
+          sed -i "s|<valuelist type=\"QVariantList\" key=\"PE.EnvironmentAspect.Changes\"/>|<valuelist type=\"QVariantList\" key=\"PE.EnvironmentAspect.Changes\"><value type=\"QString\">LD_LIBRARY_PATH=$lib_path</value></valuelist>|" "${project_file_path}.creator.user"
+        fi
+      fi
+    fi
+  fi
+done
+
+echo -e "\e[32mDone\e[0m"
+
+echo
+echo "Open both projects in qtcreator with:"
+echo qtcreator $created_projects
+echo

@@ -1,0 +1,11 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : mySpace.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 08/11/18 16:01:30 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+du --max-depth=0 -h /home/PREHCN/wang_j11

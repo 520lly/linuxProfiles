@@ -1,0 +1,36 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : /home/user/bin/tc.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 06/11/17 09:49:46 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+TARGET_NAME="root"
+PASSWD="root"
+TARGET_IP=`cat ~/bin/ifc | tr -d ['\r\n']`
+CMD_PROMPT="\](\$|#)" 
+CLEAR="\0C"
+
+#ssh $TARGET_NAME@$TARGET_IP
+#sshLogin.exp $TARGET_IP $PASSWD
+
+expect -c " 
+   spawn ssh $TARGET_NAME@$TARGET_IP
+   send_user connecting\ to\ $TARGET_NAME...\r 
+   expect {
+           *yes/no* { send -- yes\r;exp_continue;}  
+           *password* { 
+           send -- $PASSWD\r;
+           set timeout 0
+           expect -re $CMD_PROMPT
+           #send -- $CLEAR\r;            #clear screen
+       }  
+   }
+   #expect -re $CMD_PROMPT
+   #send -- $CLEAR\r;            #clear screen
+   interact
+"  

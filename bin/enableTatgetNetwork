@@ -1,0 +1,39 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : enableTatgetNetwork.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 26/12/17 10:17:22 +0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+PATH=$PATH:/home/user/bin/
+SERVER=0
+
+if [ $# -gt 0 ]
+then 
+    SERVER=$1
+fi
+
+TARGET_IP=`cat ~/bin/ifc | tr -d ['\r\n']`
+if [ $SERVER -eq 2 ]
+then 
+    TARGET_IP=`cat ~/bin/ifc2 | tr -d ['\r\n']`
+fi
+
+#change default policy of route
+scpPush -s $SERVER ./ifc4Lanptop /root
+scpPush -s $SERVER ./ifc4BuildServer /root
+scpPush -s $SERVER ./routeOnTarget.sh /root
+sshpass -p root ssh root@$TARGET_IP "chmod +x /root/routeOnTarget.sh && /root/routeOnTarget.sh"
+
+#TARGET_IP=`cat ~/bin/ifc4BuildServer | tr -d ['\r\n']`
+#remoteCmdViaSSH -s 0 "sh route add -host $TARGET_IP dev eth0"
+#TARGET_IP=`cat ~/bin/ifc4Lanptop | tr -d ['\r\n']`
+#remoteCmdViaSSH -s 0 "route add -host $TARGET_IP dev eth0"
+#remoteCmdViaSSH -s 0 "iptables -P OUTPUT ACCEPT"
+
+
+
+

@@ -563,7 +563,7 @@ Bundle 'The-NERD-Commenter'
 
 "Bundle 'FredKSchott/CoVim'
 "Bundle 'djangojump'
-Bundle 'vim-powerline' 
+Bundle '520lly/vim-powerline' 
 
 let g:Powerline_symbols = 'unicode'
 let g:Powerline_symbols = 'fancy'

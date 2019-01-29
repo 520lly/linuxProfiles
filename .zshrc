@@ -7,11 +7,12 @@ export ZSH=$HOME/.oh-my-zsh
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="robbyrussell"
-#ZSH_THEME="ys"
+ZSH_THEME="ys"
+#ZSH_THEME="dracula"
 #ZSH_THEME="bureau"
 #ZSH_THEME="agnoster"
 #ZSH_THEME="zeta"
-ZSH_THEME="spaceship"
+#ZSH_THEME="spaceship"
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
@@ -104,7 +105,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 
-alias .2='cd ../../../'
+alias .2='cd ../../'
 alias .3='cd ../../../'
 alias .4='cd ../../../../'
 alias .5='cd ../../../../../'
@@ -112,7 +113,18 @@ alias .6='cd ../../../../../../'
 alias .7='cd ../../../../../../../'
 export LS_COLORS=di=00\;34:fi=00\;32:ln=00\;33:ex=00\;31:pi=00\;35:so=00\;36:
 
-alias mib3='cd ~/jpcc/code/mib3/'
+alias bs='buildServer.sh'
+alias bs1='buildServer.sh -s 1'
+alias bs2='buildServer.sh -s 2'
+CNSDEBUG=/mnt/hgfs/SharedFolder/works/dev
+STUDY=/mnt/hgfs/SharedFolder/study
+alias cns3='cd ~/work/projs/code/cns3'
+alias mib3='cd ~/work/projs/code/mib3'
+alias debug='cd /mnt/hgfs/SharedFolder/debug/'
+alias cnsdebug='cd $CNSDEBUG'
+alias study='cd $STUDY'
+alias gopath='cd /home/jacking/work/study/code/go/gopath/src'
+alias sf='cd /mnt/hgfs/SharedFolder'
 alias phones='cd ~/jpcc/code/mib3/dev/src/phone'
 alias phoneb='cd ~/jpcc/code/mib3/dev/build/phone'
 alias phoned='cd ~/jpcc/code/mib3/dev/dist/phone'
@@ -122,7 +134,7 @@ alias tmux='tmux -2'
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
 autoload bashcompinit
 bashcompinit
-source ~/tools/bob/contrib/bash-completion
+source /home/jacking/tools/bob/contrib/bash-completion
 
 #for State Machine Genetation tools
 export STMGEN_JAR_PATH="/home/PREHCN/wang_j11/tools/jpcc-stm-generator/libs/tsd.common.tools.stmgen.jar"
@@ -141,8 +153,8 @@ COMMONAPI_BINARIES_PATH=${BOB_DEV}/dist/communication/ext-commonapi-generator/1/
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${COMMONAPI_CREATOR_PATH}/lib64
 export LD_LIBRARY_PATH
 
-export GOPATH=$HOME/tools/gopath
-export GOROOT=$HOME/tools/go1.10.3
+export GOPATH=/home/jacking/go/gopath
+export GOROOT=/home/jacking/go/go1.10.3
 export GOBIN=$GOROOT/bin
 export GO15VENDOREXPERIMENT=1
 
@@ -229,3 +241,7 @@ alias zshrc='vim ~/.zshrc'
 ## Single quotes are important so that function is not run immediately and saved
 ## in the variable
 #RPROMPT='$(__get_vi_mode)'
+
+#zplug installation.
+#,as:theme
+#zplug "dracula/zsh"

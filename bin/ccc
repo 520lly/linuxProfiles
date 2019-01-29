@@ -14,7 +14,7 @@ SERVER=0
 function usage()
 {
 cat <<EOF
-    usage: $0 t [0/1]<target ifc/ifc2>
+usage: $0 t [0/1]<target ifc/ifc2>
 EOF
 }
 
@@ -48,13 +48,13 @@ expect -c "
            *yes/no* { send -- yes\r;exp_continue;}  
            *password* { 
            send -- $PASSWD\r;
-           set timeout 0
+           set timeout 1
            expect -re $CMD_PROMPT
            send -- mount-read-write.sh\r;            #auto mount
-           #send -- $CLEAR\r;            #clear screen
+           #send -- $CLEAR\r;                        #clear screen
        }  
    }
    #expect -re $CMD_PROMPT
-   #send -- $CLEAR\r;            #clear screen
+   #send -- $CLEAR\r;                                #clear screen
    interact
 "  

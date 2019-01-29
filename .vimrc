@@ -40,7 +40,7 @@ cnoremap <Leader>ce <C-R>=expand('%:e')<CR>
 "输入模式下退出当前模式进入普通模式
 inoremap <Leader><Leader><space> <Esc>
 inoremap jk <Esc>
-"vnoremap jk <Esc>
+vnoremap jk <Esc>
 vnoremap <space><space> <Esc><CR>
 
 " save
@@ -231,25 +231,24 @@ set iskeyword+=_,$,@,%,#,-
 au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=mkd
 au BufRead,BufNewFile *.{go}   set filetype=go
 au BufRead,BufNewFile *.{js}   set filetype=javascript
+au BufRead,BufNewFile *.{asm,nasm,s}   set filetype=gas
 "rkdown to HTML  
 nmap md :!~/.vim/markdown.pl % > %.html <CR><CR>
 nmap fi :!firefox %.html & <CR><CR>
 nmap \ \cc
 vmap \ \cc
-
 "将tab替换为空格
 nmap tt :%s/\t/    /g<CR>
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""新文件标题
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "新建.c,.h,.sh,.java文件，自动插入文件头 
-autocmd BufNewFile *.cpp,*.[ch],*.hpp,*.sh,*.rb,*.java,*.py exec ":call SetTitle()" 
+autocmd BufNewFile *.cpp,*.[ch],*.hpp,*.sh,*.rb,*.java,*.py,*.asm,*.s,*.nasm exec ":call SetTitle()" 
 ""定义函数SetTitle，自动插入文件头 
 func SetTitle() 
     "如果文件类型为.sh文件 
+    echo "------------------&filetype"
     if &filetype == 'sh' 
         call setline(1,"\#!/bin/bash") 
         call setline(2,"# encoding: utf-8")
@@ -283,7 +282,12 @@ func SetTitle()
     elseif &filetype == 'javascript'
         call setline(1,"//".expand("%"))
         call setline(2, "") 
-
+    elseif &filetype == 'gas'
+        call setline(1,"#".expand("%"))
+        call setline(2, ".section .data") 
+        call setline(3, ".section .text") 
+        call setline(4, ".globl _start") 
+        call setline(5, "_start:") 
     elseif &filetype == 'ruby'
         call setline(1,"#!/usr/bin/env ruby")
         call append(line("."),"# encoding: utf-8")
@@ -531,6 +535,7 @@ Bundle 'terryma/vim-multiple-cursors'
 Bundle 'kshenoy/vim-signature'
 Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 Bundle 'Yggdroot/indentLine'
+"Bundle 'dracula/vim'
 let g:indentLine_char = '┊'
 "ndle 'tpope/vim-rails.git'
 " vim-scripts repos
@@ -550,12 +555,14 @@ Bundle 'Python-mode-klen'
 "Bundle 'JavaScript-Indent'
 "Bundle 'Better-Javascript-Indentation'
 "Bundle 'jslint.vim'
-"Bundle "pangloss/vim-javascript"
+"Bundle 'jsbeautify'
+"Bundle 'pangloss/vim-javascript'
 Bundle 'Vim-Script-Updater'
 Bundle 'ctrlp.vim'
 Bundle 'tacahiroy/ctrlp-funky'
-"Bundle 'jsbeautify'
 Bundle 'The-NERD-Commenter'
+
+Bundle 'vim-airline/vim-airline-themes'
 
 "django 加密
 "Bundle 'django_templates.vim'
@@ -563,7 +570,7 @@ Bundle 'The-NERD-Commenter'
 
 "Bundle 'FredKSchott/CoVim'
 "Bundle 'djangojump'
-Bundle '520lly/vim-powerline' 
+Bundle 'Lokaltog/vim-powerline' 
 
 let g:Powerline_symbols = 'unicode'
 let g:Powerline_symbols = 'fancy'
@@ -576,14 +583,11 @@ set fillchars+=stl:\ ,stlnc:\
 
 "Bundle 'git@github.com:520lly/vim-grepper.git'
 Bundle '520lly/vim-grepper'
-
 nnoremap <Leader>g :Grepper -tool git<cr>
 nnoremap <Leader>G :Grepper -tool ag<cr>
 nnoremap <Leader>gc :Grepper -tool ag -cword -noprompt<cr>
-
 nmap gs <plug>(GrepperOperator)
 xmap gs <plug>(GrepperOperator)
-
 " Optional. The default behaviour should work for most users.
 let g:grepper               = {}
 let g:grepper.tools         = ['git', 'ag', 'rg']
@@ -593,7 +597,6 @@ let g:grepper.simple_prompt = 1
 let g:grepper.quickfix      = 0
 
 Bundle '520lly/vim-dict'
-
 let g:html_indent_inctags = "html,body,head,tbody"
 let g:html_indent_script1 = "inc"
 let g:html_indent_style1 = "inc"
@@ -608,6 +611,8 @@ nmap tb :TagbarToggle<CR>
 
 
 filetype plugin indent on     " required!
+
+Bundle 'Shirk/vim-gas'
 
 "set the ignored files with special tail 
 let NERDTreeIgnore=['\.pyc','\.out','tags', '\.files']
@@ -1021,6 +1026,60 @@ autocmd FileType c vnoremap <buffer> <Leader> <c-f> :call RangeUncrustify('c')<C
 autocmd FileType cpp noremap <buffer> <Leader> <c-f> :call Uncrustify('cpp')<CR>
 autocmd FileType cpp vnoremap <buffer> <Leader> <c-f> :call RangeUncrustify('cpp')<CR>
 
+""""""""""""""""""""""""""""""
+" fzf setting
+""""""""""""""""""""""""""""""
+Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
+
+imap <C-X><C-L> <plug>(fzf-complete-line) 
+" Enable per-command history.
+" CTRL-N and CTRL-P will be automatically bound to next-history and
+" previous-history instead of down and up. If you don't like the change,
+" explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
+let g:fzf_history_dir = '~/.local/share/fzf-history'
+
+" [Buffers] Jump to the existing window if possible
+let g:fzf_buffers_jump = 1
+
+" [[B]Commits] Customize the options used by 'git log':
+"let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
+
+" [Tags] Command to generate tags file
+let g:fzf_tags_command = 'ctags -R'
+
+" [Commands] --expect expression for directly executing the command
+let g:fzf_commands_expect = 'alt-enter,ctrl-x'
+
+noremap <Leader><c-r>f :Files 
+noremap <Leader><c-r>c :Commands 
+noremap <Leader><c-r>ch :History: 
+noremap <Leader><c-r>h :History/ 
+noremap <Leader><c-r>ft :FileType 
+noremap <Leader><c-r>gc :Commits 
+noremap <Leader><c-r>t :Tags 
+noremap <Leader><c-r>mr :Marks 
+noremap <Leader><c-r>mp :Maps 
+noremap <Leader><c-r>l :Lines 
+noremap <Leader><c-r>bl :BLines
+
+"" fzf.vim
+set wildmode=list:longest,list:full
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+
+" The Silver Searcher
+if executable('ag')
+  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+" ripgrep
+if executable('rg')
+  let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.git/*"'
+  set grepprg=rg\ --vimgrep
+  command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+endif
 
 """"""""""""""""""""""""""""""
 " snippet setting

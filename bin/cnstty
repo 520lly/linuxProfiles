@@ -1,0 +1,12 @@
+#!/bin/bash
+# encoding: utf-8
+# Name  : cnstty.sh
+# Descp : used for 
+# Author: jaycee
+# Date  : 20/12/18 18:01:35 -0800
+__version__=0.1
+
+#set -x                     #print every excution log
+set -e                     #exit when error hanppens
+
+sudo ~/tools/coqoshv/periscope/bin/periscope -u serial:/dev/ttyUSB0 

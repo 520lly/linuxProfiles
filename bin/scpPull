@@ -23,7 +23,8 @@ cat << EOF
 usage:scpPull  [-h?s] <source_file(remote:$TARGET_NAME@$TARGET_IP:${1:-"/root"})> ${2:-"<dest_file>"}
 -------- server 0 : $TARGET_NAME@$TARGET_IP 
 -------- server 1 : cnninvmwkst01 
--------- server 2 : target 
+-------- server 2 : cnninvmwkst02
+-------- server 3 : target 
 EOF
 }
 
@@ -50,6 +51,12 @@ then
     TARGET_IP=10.57.9.145
     PASSWD=`cat ~/bin/pw4wang_j11 | tr -d ['\r\n']`
 elif [ $SERVER -eq 2 ]
+then
+    TARGET_NAME="wang_j11"
+    #TARGET_IP=cnninvmwkst01
+    TARGET_IP=10.57.69.11
+    PASSWD=`cat ~/bin/pw4wang_j11 | tr -d ['\r\n']`
+elif [ $SERVER -eq 3 ]
 then 
     TARGET_IP=`cat ~/bin/ifc2 | tr -d ['\r\n']`
 fi 

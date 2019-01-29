@@ -14,6 +14,8 @@ if which apt-get >/dev/null; then
    sudo apt-get install -y vim vim-gnome 
    echo "正在努力为您安装ctags程序" > ma6174
    sudo apt-get install -y ctags 
+   echo "正在努力为您安装cscope程序" > ma6174
+   sudo apt-get install -y cscope 
    echo "正在努力为您安装xclip程序" > ma6174
    sudo apt-get install -y xclip 
    echo "正在努力为您安装astyle程序" > ma6174

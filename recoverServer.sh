@@ -28,6 +28,8 @@ if which apt-get >/dev/null; then
    sudo apt-get install -y build-essential automake libtool-bin
    echo "正在努力为您安装ssh程序" > ma6174
    sudo apt-get install -y ssh zsh tmux
+   echo "正在努力为您安装mono程序" > ma6174
+   sudo apt-get install -y mono-complete
    echo "正在努力为您安装curl程序" > ma6174
    sudo apt-get install -y libcurl4-gnutls-dev pkg-config 
 elif which yum >/dev/null; then

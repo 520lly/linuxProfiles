@@ -53,8 +53,8 @@ sudo ln -s /usr/bin/ctags /usr/local/bin/ctags
 j
 if [ which git > /dev/null ]; then
    cd ~/ && git clone https://github.com/ma6174/vim.git ~/.vim
-   #git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-   #mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+   git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+   mkdir -p ~/.vim/autoload ~/.vim/bundle
 fi
 
 mv -f ~/vim ~/vim_old
@@ -64,10 +64,12 @@ if [ "$(uname -a | awk '{ print $2}')" == "ubuntu" ]; then
    cp .vimrc ..
    cp .zshrc ..
 fi
-#mv -f ~/.vim ~/.vim_old
-#mv -f ~/vim ~/.vim
-#mv -f ~/.vimrc ~/.vimrc_old
-#mv -f ~/.vim/.vimrc ~/
+
+mv -f ~/.vim ~/.vim_old
+mv -f ~/vim ~/.vim
+mv -f ~/.vimrc ~/.vimrc_old
+mv -f ~/.vim/.vimrc ~/
+
 echo "正在努力为您安装bundle程序" > ma6174
 echo "安装完毕将自动退出" >> ma6174
 echo "请耐心等待" >> ma6174
@@ -98,3 +100,5 @@ if [ which git > /dev/null ]; then
    make
 fi
 
+echo "正在努力为您安装dracula Theme"
+git clone https://github.com/dracula/zsh.git ~/.oh-my-zsh/themes/dracula.zsh-theme
